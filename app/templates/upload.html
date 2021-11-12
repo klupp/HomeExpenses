@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="utf-8">
+	<title>Upload Home Utility Measurement</title>
+	<style>
+		img{
+			max-width:450px;
+			max-height:450px;
+		}
+	</style>
+</head>
+<body>
+	<h2>Select a photo of measurement to upload</h2>
+	<p>
+		{% with messages = get_flashed_messages() %}
+		  {% if messages %}
+			<ul>
+			{% for message in messages %}
+			  <li>{{ message }}</li>
+			{% endfor %}
+			</ul>
+		  {% endif %}
+		{% endwith %}
+	</p>
+	{% if filename %}
+		<div>
+			<img src="{{ url_for('display_image', filename=filename) }}">
+		</div>
+	{% endif %}
+	<form method="post" action="/" enctype="multipart/form-data">
+		<dl>
+			<p>
+				<input type="file" name="file" id="mypic" accept="image/*" capture="camera" autocomplete="off" required>
+			</p>
+			<p id="showImg">
+			</p>
+			<p>
+				Measurement
+				<input type="number" name="measurement" step=any autocomplete="off" required>
+			</p>
+			<p>
+				<input type="radio" id="electricity" name="contract" value="Electricity">
+				<label for="electricity">Electricity</label><br>
+				<input type="radio" id="gas" name="contract" value="Gas">
+				<label for="gas">Gas</label><br>
+				<input type="radio" id="water" name="contract" value="Water">
+				<label for="water">Water</label>
+			</p>
+		</dl>
+		<p>
+			<input type="submit" value="Submit">
+		</p>
+	</form>
+	<script>
+	  var input = document.querySelector('input[type=file]');
+	  input.onchange = function () {
+		var file = input.files[0];
+		//upload(file);
+		//drawOnCanvas(file);   // see Example 6
+		displayAsImage(file); // see Example 7
+	  };
+
+	  function upload(file) {
+		var form = new FormData(),
+			xhr = new XMLHttpRequest();
+
+		form.append('image', file);
+		xhr.open('post', 'server.php', true);
+		xhr.send(form);
+	  }
+
+	  function drawOnCanvas(file) {
+		var reader = new FileReader();
+		reader.onload = function (e) {
+		  var dataURL = e.target.result,
+			  c = document.querySelector('canvas'), // see Example 4
+			  ctx = c.getContext('2d'),
+			  img = new Image();
+
+		  img.onload = function() {
+			c.width = img.width;
+			c.height = img.height;
+			ctx.drawImage(img, 0, 0);
+		  };
+
+		  img.src = dataURL;
+		};
+
+		reader.readAsDataURL(file);
+	  }
+
+	  function displayAsImage(file) {
+		var imgURL = URL.createObjectURL(file),
+			img = document.createElement('img');
+
+		img.onload = function() {
+		  URL.revokeObjectURL(imgURL);
+		};
+
+		img.src = imgURL;
+
+		var imgParent = document.querySelector('#showImg');
+		imgParent.innerHTML = '';
+		imgParent.appendChild(img)
+	  }
+	</script>
+<!-- source: http://www.w3.org/TR/html-media-capture/ -->
+</body>
+</html>
