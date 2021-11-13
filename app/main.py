@@ -10,7 +10,7 @@ from datetime import datetime
 CONTRACTS = ['Electricity', 'Gas', 'Water']
 
 ALLOWED_EXTENSIONS = {'png', 'jpg', 'jpeg', 'gif'}
-MEASUREMENTS_PATH = '../measurements.csv'
+MEASUREMENTS_PATH = '/home/aleks/Documents/my_documents/home/Aachen/Utilities/measurements.csv'
 
 
 def allowed_file(filename):

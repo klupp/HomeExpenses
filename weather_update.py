@@ -9,8 +9,8 @@ location = {
     'lon': 6.075709,
     'city': 'Aachen',
     'zip': 52064,
-    'data_loc': 'aachen_weather.csv',
-    'hour_data_loc': 'aachen_hourly_weather.csv'
+    'data_loc': '/home/aleks/Documents/my_documents/home/Aachen/Utilities/aachen_weather.csv',
+    'hour_data_loc': '/home/aleks/Documents/my_documents/home/Aachen/Utilities/aachen_hourly_weather.csv'
 }
 
 
