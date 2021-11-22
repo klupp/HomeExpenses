@@ -1,10 +1,11 @@
 import os
 from app import app
-from flask import flash, request, redirect, url_for, render_template
+from flask import flash, request, redirect, url_for, render_template, Response
 from werkzeug.utils import secure_filename
 from PIL import Image, ExifTags
 import pandas as pd
 from datetime import datetime
+import uuid
 
 
 CONTRACTS = ['Electricity', 'Gas', 'Water']
@@ -20,6 +21,31 @@ def allowed_file(filename):
 @app.route('/')
 def upload_form():
     return render_template('upload.html')
+
+
+@app.route('/upload', methods=['POST'])
+def upload_image_ai():
+    if 'X-Device-Id' not in request.headers:
+        return 'No X-Device-Id header present.', 400
+    device_id = request.headers['X-Device-Id']
+
+    if 'imageFile' not in request.files:
+        return 'No file part', 400
+    file = request.files['imageFile']
+    if file.filename == '':
+        return 'No image selected for uploading', 400
+    if not (file and allowed_file(file.filename)):
+        return 'Allowed image types are -> png, jpg, jpeg, gif', 400
+
+    filename = secure_filename(file.filename)
+    current_time = datetime.now()
+    new_filename = str(current_time) + "." + filename.split(".", 1)[1]
+    filepath = os.path.join(app.config['UPLOAD_FOLDER'] + 'ai/', new_filename)
+    file.save(filepath)
+    img = Image.open(filepath)
+    # exif = {ExifTags.TAGS[k]: v for k, v in img._getexif().items() if k in ExifTags.TAGS}
+
+    return "Successful upload", 200
 
 
 @app.route('/', methods=['POST'])
