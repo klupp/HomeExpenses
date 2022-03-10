@@ -5,13 +5,15 @@ from werkzeug.utils import secure_filename
 from PIL import Image, ExifTags
 import pandas as pd
 from datetime import datetime
-import uuid
 
 
 CONTRACTS = ['Electricity', 'Gas', 'Water']
 
 ALLOWED_EXTENSIONS = {'png', 'jpg', 'jpeg', 'gif'}
 MEASUREMENTS_PATH = '/home/aleks/Documents/my_documents/home/Aachen/Utilities/measurements.csv'
+DEVICES = {
+    "eb680530-a698-45de-a445-8d8f9dc10b4e": "Kar39EGThermostat"
+}
 
 
 def allowed_file(filename):
@@ -40,9 +42,12 @@ def upload_image_ai():
     filename = secure_filename(file.filename)
     current_time = datetime.now()
     new_filename = str(current_time) + "." + filename.split(".", 1)[1]
-    filepath = os.path.join(app.config['UPLOAD_FOLDER'] + 'ai/', new_filename)
+
+    device_name = DEVICES[device_id]
+    10
+    filepath = os.path.join(app.config['UPLOAD_FOLDER'] + 'devices/' + device_name + "/photos/", new_filename)
     file.save(filepath)
-    img = Image.open(filepath)
+    # img = Image.open(filepath)
     # exif = {ExifTags.TAGS[k]: v for k, v in img._getexif().items() if k in ExifTags.TAGS}
 
     return "Successful upload", 200
