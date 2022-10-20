@@ -10,7 +10,7 @@ from datetime import datetime
 CONTRACTS = ['Electricity', 'Gas', 'Water']
 
 ALLOWED_EXTENSIONS = {'png', 'jpg', 'jpeg', 'gif'}
-MEASUREMENTS_PATH = '/home/aleks/Documents/my_documents/home/Aachen/Utilities/measurements.csv'
+MEASUREMENTS_PATH = '../measurements.csv'
 DEVICES = {
     "eb680530-a698-45de-a445-8d8f9dc10b4e": "Kar39EGThermostat"
 }
@@ -44,7 +44,6 @@ def upload_image_ai():
     new_filename = str(current_time) + "." + filename.split(".", 1)[1]
 
     device_name = DEVICES[device_id]
-    10
     filepath = os.path.join(app.config['UPLOAD_FOLDER'] + 'devices/' + device_name + "/photos/", new_filename)
     file.save(filepath)
     # img = Image.open(filepath)
