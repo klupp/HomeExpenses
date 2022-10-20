@@ -1,3 +1,5 @@
 # Default ignored files
 /.ipynb_checkpoints/
 /.idea/
+/venv/
+
