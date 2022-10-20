@@ -112,6 +112,10 @@ def upload_image():
 
     measurements_df.to_csv(MEASUREMENTS_PATH, index=False)
 
+    os.system('git add .')
+    os.system(f"git commit -m 'New {contract} measurement for {contract_name} on {created_time}'")
+    os.system('git push')
+
     flash('Measurement submitted successfully')
     # return render_template('upload.html', filename=filename)
     return render_template('upload.html')
