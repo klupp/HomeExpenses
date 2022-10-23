@@ -1,10 +1,12 @@
 import os
 from app import app
-from flask import flash, request, redirect, url_for, render_template, Response
+from flask import flash, request, redirect, url_for, render_template
 from werkzeug.utils import secure_filename
 from PIL import Image, ExifTags
 import pandas as pd
 from datetime import datetime
+
+from git import Repo
 
 
 CONTRACTS = ['Electricity', 'Gas', 'Water']
@@ -102,21 +104,24 @@ def upload_image():
 
     measurements_df = pd.read_csv(MEASUREMENTS_PATH)
 
-    measurements_df = measurements_df.append({
+    new_measurement_df = pd.DataFrame({
         'aggregate_consumption': measurement,
         "date": created_time,
         "measure_unit": measure_unit,
         'contract': contract_name,
         'photo': filename
-    }, ignore_index=True)
+    })
+    measurements_df = pd.concat([measurements_df, new_measurement_df], ignore_index=True)
 
     measurements_df.to_csv(MEASUREMENTS_PATH, index=False)
+    my_cwd = os.path.dirname(os.getcwd())
+    repo = Repo(my_cwd)
+    repo.git.add(update=True)
+    repo.index.commit(f"New {contract} measurement for {contract_name} on {created_time}")
+    origin = repo.remote(name='origin')
+    origin.push()
 
-    os.system('git add .')
-    os.system(f"git commit -m 'New {contract} measurement for {contract_name} on {created_time}'")
-    os.system('git push')
-
-    flash('Measurement submitted successfully')
+    flash('Measurement submitted successfully.')
     # return render_template('upload.html', filename=filename)
     return render_template('upload.html')
 
