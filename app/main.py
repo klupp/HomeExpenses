@@ -110,7 +110,7 @@ def upload_image():
         "measure_unit": measure_unit,
         'contract': contract_name,
         'photo': filename
-    })
+    }, index=["1"])
     measurements_df = pd.concat([measurements_df, new_measurement_df], ignore_index=True)
 
     measurements_df.to_csv(MEASUREMENTS_PATH, index=False)
