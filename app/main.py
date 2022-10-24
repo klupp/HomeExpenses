@@ -94,7 +94,8 @@ def upload_image():
         measure_unit = 'm3'
 
     filename = secure_filename(file.filename)
-    filepath = os.path.join(app.config['UPLOAD_FOLDER'], filename)
+    filepath = os.path.join(os.getcwd(), app.config['UPLOAD_FOLDER'], filename)
+    print(filepath)
     file.save(filepath)
 
     img = Image.open(filepath)
