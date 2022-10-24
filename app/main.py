@@ -116,7 +116,7 @@ def upload_image():
     measurements_df.to_csv(MEASUREMENTS_PATH, index=False)
     my_cwd = os.path.dirname(os.getcwd())
     repo = Repo(my_cwd)
-    repo.git.add(update=True)
+    repo.git.add(".")
     repo.index.commit(f"New {contract} measurement for {contract_name} on {created_time}")
     origin = repo.remote(name='origin')
     origin.push()
