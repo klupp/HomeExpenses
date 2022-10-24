@@ -1,0 +1,11 @@
+ContractBonusID,ContractID,BonusAmount,BonusDate,BonusDescription
+StromJak138-19/Sofort,StromJak138-19,120,26.11.2019,Sofort-Bonus
+StromJak138-19/Treue,StromJak138-19,145.4,09.10.2020,Treue-Bonus
+StromJak138-20/Sofort,StromJak138-20,170,26.11.2020,Sofort-Bonus
+StromJak138-20/Treue,StromJak138-20,145,03.10.2021,Treue-Bonus
+StromKar39-21/Sofort,StromKar39-21,20,06.12.2021,Sofort-Bonus
+StromKar39-21/Treue,StromKar39-21,42,10.10.2022,Treue-Bonus
+GasKar39-21/Sofort,GasKar39-21,20,06.12.2021,Sofort-Bonus
+GasKar39-21/Treue,GasKar39-21,173,10.10.2022,Treue-Bonus
+StromKar39-22/Sofort,StromKar39-22,12,30.10.2022,Sofort-Bonus
+GasKar39-22/Sofort,GasKar39-22,12,30.10.2022,Sofort-Bonus
