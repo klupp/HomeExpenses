@@ -1,9 +1,9 @@
 ID,ContractName,Type,Address,ContractYear,From,To,Contractor,Currency,MeasureUnit
-StromJak138-19,StromJak138-19,Strom,Jakobstraße 138 1.OG,2019,01.10.2019,30.09.2020,Grünwelt,EUR,kWh
-GasJak138-19,GasJak138-19,Gas,Jakobstraße 138 1.OG,2019,01.10.2019,30.09.2020,Unknown,EUR,kWh
-StromJak138-20,StromJak138-20,Strom,Jakobstraße 138 1.OG,2020,02.10.2020,01.10.2021,Vattenfall,EUR,kWh
-GasJak138-20,GasJak138-20,Gas,Jakobstraße 138 1.OG,2020,01.10.2020,30.09.2021,Unknown,EUR,kWh
-StromKar39-21,StromKar39-21,Strom,Karlsgraben 39 EG,2021,11.10.2021,10.10.2022,Vattenfall,EUR,kWh
-GasKar39-21,GasKar39-21,Gas,Karlsgraben 39 EG,2021,11.10.2021,10.10.2022,Vattenfall,EUR,kWh
-StromKar39-22,StromKar39-22,Strom,Karlsgraben 39 EG,2022,11.10.2022,10.10.2023,STAWAG,EUR,kWh
-GasKar39-22,GasKar39-22,Gas,Karlsgraben 39 EG,2022,11.10.2022,10.10.2023,STAWAG,EUR,kWh
+StromJak138-19,StromJak138-19,Strom,Jakobstraße 138 1.OG,2019,2019-10-01,2020-09-30,Grünwelt,EUR,kWh
+GasJak138-19,GasJak138-19,Gas,Jakobstraße 138 1.OG,2019,2019-10-01,2020-09-30,Unknown,EUR,kWh
+StromJak138-20,StromJak138-20,Strom,Jakobstraße 138 1.OG,2020,2020-10-02,2021-10-01,Vattenfall,EUR,kWh
+GasJak138-20,GasJak138-20,Gas,Jakobstraße 138 1.OG,2020,2020-10-01,2021-09-30,Unknown,EUR,kWh
+StromKar39-21,StromKar39-21,Strom,Karlsgraben 39 EG,2021,2021-10-11,2022-10-10,Vattenfall,EUR,kWh
+GasKar39-21,GasKar39-21,Gas,Karlsgraben 39 EG,2021,2021-10-11,2022-10-10,Vattenfall,EUR,kWh
+StromKar39-22,StromKar39-22,Strom,Karlsgraben 39 EG,2022,2022-10-11,2023-10-10,STAWAG,EUR,kWh
+GasKar39-22,GasKar39-22,Gas,Karlsgraben 39 EG,2022,2022-10-11,2023-10-10,STAWAG,EUR,kWh
