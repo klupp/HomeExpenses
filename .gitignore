@@ -4,3 +4,4 @@
 /venv/
 /app/__pycache__/
 /app/.ipynb_checkpoints/
+/app/stdout.log

@@ -1,6 +1,9 @@
 import os
+import sys
+import logging
 from app import app
 from flask import flash, request, redirect, url_for, render_template
+
 from werkzeug.utils import secure_filename
 from PIL import Image, ExifTags
 import pandas as pd
@@ -8,6 +11,22 @@ from datetime import datetime
 
 from git import Repo
 
+logging.basicConfig(filename='stdout.log', encoding='utf-8', level=logging.DEBUG)
+
+logger = logging.getLogger(__name__)
+handler = logging.StreamHandler(stream=sys.stdout)
+logger.addHandler(handler)
+
+
+def handle_exception(exc_type, exc_value, exc_traceback):
+    if issubclass(exc_type, KeyboardInterrupt):
+        sys.__excepthook__(exc_type, exc_value, exc_traceback)
+        return
+
+    logger.error("Uncaught exception", exc_info=(exc_type, exc_value, exc_traceback))
+
+
+sys.excepthook = handle_exception
 
 CONTRACTS = ['Electricity', 'Gas', 'Water']
 
@@ -95,10 +114,12 @@ def upload_image():
 
     filename = secure_filename(file.filename)
     filepath = os.path.join(os.getcwd(), app.config['UPLOAD_FOLDER'], filename)
-    print(filepath)
+    logger.debug("Uploading image...")
     file.save(filepath)
 
     img = Image.open(filepath)
+    logger.debug("Image uploaded...")
+    logger.debug("Adding new measurement...")
     exif = {ExifTags.TAGS[k]: v for k, v in img._getexif().items() if k in ExifTags.TAGS}
 
     created_time = datetime.strptime(exif['DateTime'], '%Y:%m:%d %H:%M:%S')
@@ -115,12 +136,16 @@ def upload_image():
     measurements_df = pd.concat([measurements_df, new_measurement_df], ignore_index=True)
 
     measurements_df.to_csv(MEASUREMENTS_PATH, index=False)
+    logger.debug("New measurement added...")
+
+    logger.debug("Committing the new measurement...")
     my_cwd = os.path.dirname(os.getcwd())
     repo = Repo(my_cwd)
     repo.git.add(".")
     repo.index.commit(f"New {contract} measurement for {contract_name} on {created_time}")
     origin = repo.remote(name='origin')
     origin.push()
+    logger.debug("New measurement committed...")
 
     flash('Measurement submitted successfully.')
     # return render_template('upload.html', filename=filename)
