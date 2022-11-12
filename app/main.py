@@ -141,9 +141,10 @@ def upload_image():
     logger.debug("Committing the new measurement...")
     my_cwd = os.path.dirname(os.getcwd())
     repo = Repo(my_cwd)
+    origin = repo.remote(name='origin')
+    origin.pull()
     repo.git.add(".")
     repo.index.commit(f"New {contract} measurement for {contract_name} on {created_time}")
-    origin = repo.remote(name='origin')
     origin.push()
     logger.debug("New measurement committed...")
 

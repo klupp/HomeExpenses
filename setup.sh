@@ -2,10 +2,11 @@
 
 project_dir="$( cd "$( dirname "$0" )" && pwd )/app"
 
+USER=$(whoami)
 OUTFILE=/lib/systemd/system/utilities.service
 EXECUTE="cd $project_dir && source ../venv/bin/activate && python main.py FLASK_APP=main.py"
 echo $EXECUTE
-sudo out=$OUTFILE exec="$EXECUTE" sh -c 'cat << EOF > $out
+sudo out=$OUTFILE exec="$EXECUTE" user=$USER sh -c 'cat << EOF > $out
 [Unit]
 Description=Home Utilities Service
 After=multi-user.target
@@ -13,7 +14,8 @@ After=multi-user.target
 [Service]
 Type=idle
 Restart=on-failure
-User=root
+User=$user
+Group=admin
 ExecStart=/bin/bash -c "$exec"
 
 [Install]
