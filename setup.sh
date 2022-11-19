@@ -15,7 +15,6 @@ After=multi-user.target
 Type=idle
 Restart=on-failure
 User=$user
-Group=admin
 ExecStart=/bin/bash -c "$exec"
 
 [Install]
