@@ -103,6 +103,12 @@ def upload_image():
         flash('The selected contract is not in the allowed contracts')
         return redirect(request.url)
 
+    logger.debug("Pulling any remote changes...")
+    my_cwd = os.path.dirname(os.getcwd())
+    repo = Repo(my_cwd)
+    origin = repo.remote(name='origin')
+    origin.pull()
+
     contract_name = ''
     measure_unit = ''
     if contract == 'Electricity':
@@ -139,10 +145,6 @@ def upload_image():
     logger.debug("New measurement added...")
 
     logger.debug("Committing the new measurement...")
-    my_cwd = os.path.dirname(os.getcwd())
-    repo = Repo(my_cwd)
-    origin = repo.remote(name='origin')
-    origin.pull()
     repo.git.add(".")
     repo.index.commit(f"New {contract} measurement for {contract_name} on {created_time}")
     origin.push()
