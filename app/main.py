@@ -112,10 +112,10 @@ def upload_image():
     contract_name = ''
     measure_unit = ''
     if contract == 'Electricity':
-        contract_name = 'StromKar39-22'
+        contract_name = 'StromKar39-23'
         measure_unit = 'kWh'
     if contract == 'Gas':
-        contract_name = 'GasKar39-22'
+        contract_name = 'GasKar39-23'
         measure_unit = 'm3'
 
     filename = secure_filename(file.filename)
