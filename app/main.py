@@ -1,164 +1,117 @@
-import os
-import sys
-import logging
-from app import app
-from flask import flash, request, redirect, url_for, render_template
+from enum import Enum
+from typing import List
 
-from werkzeug.utils import secure_filename
-from PIL import Image, ExifTags
-import pandas as pd
-from datetime import datetime
-
-from git import Repo
-
-logging.basicConfig(filename='stdout.log', encoding='utf-8', level=logging.DEBUG)
-
-logger = logging.getLogger(__name__)
-handler = logging.StreamHandler(stream=sys.stdout)
-logger.addHandler(handler)
+from fastapi import FastAPI
+from pydantic import (
+	BaseModel,
+	PositiveFloat,
+	PositiveInt,
+	AwareDatetime,
+	FilePath,
+	model_validator
+)
 
 
-def handle_exception(exc_type, exc_value, exc_traceback):
-    if issubclass(exc_type, KeyboardInterrupt):
-        sys.__excepthook__(exc_type, exc_value, exc_traceback)
-        return
+class MeasurementType(
+	str,
+	Enum
+):
+	gas = "gas"
+	electricity = "electricity"
+	water = "water"
 
-    logger.error("Uncaught exception", exc_info=(exc_type, exc_value, exc_traceback))
+
+class MeasurementUnit(
+	str,
+	Enum
+):
+	kWh = "kWh"
+	mWh = "mWh"
+	m3 = "m3"
 
 
-sys.excepthook = handle_exception
-
-CONTRACTS = ['Electricity', 'Gas', 'Water']
-
-ALLOWED_EXTENSIONS = {'png', 'jpg', 'jpeg', 'gif'}
-MEASUREMENTS_PATH = '../measurements.csv'
-DEVICES = {
-    "eb680530-a698-45de-a445-8d8f9dc10b4e": "Kar39EGThermostat"
+ALLOWED_UNITS = {
+	MeasurementType.gas: {
+		MeasurementUnit.kWh,
+		MeasurementUnit.mWh,
+		MeasurementUnit.m3
+	},
+	MeasurementType.electricity: {
+		MeasurementUnit.kWh,
+		MeasurementUnit.mWh
+	},
+	MeasurementType.water: {
+		MeasurementUnit.m3
+	},
 }
 
 
-def allowed_file(filename):
-    return '.' in filename and filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
+class MeasurementCreate(
+	BaseModel
+):
+	contract_id: PositiveInt
+	date: AwareDatetime
+	type: MeasurementType
+	unit: MeasurementUnit
+	aggregate_consumption: PositiveFloat
+	photo: FilePath | None = None
+
+	@model_validator(
+		mode='after'
+	)
+	def check_unit_matches_type(
+			self
+	):
+		allowed_units = ALLOWED_UNITS.get(
+			self.type,
+			set()
+		)
+		if self.unit not in allowed_units:
+			raise ValueError(
+				f"Unit '{self.unit}' is not valid for measurement type '{self.type}'."
+			)
+		return self
 
 
-@app.route('/')
-def upload_form():
-    return render_template('upload.html')
+class Measurement(
+	MeasurementCreate
+):
+	id: PositiveInt
 
 
-@app.route('/upload', methods=['POST'])
-def upload_image_ai():
-    if 'X-Device-Id' not in request.headers:
-        return 'No X-Device-Id header present.', 400
-    device_id = request.headers['X-Device-Id']
-
-    if 'imageFile' not in request.files:
-        return 'No file part', 400
-    file = request.files['imageFile']
-    if file.filename == '':
-        return 'No image selected for uploading', 400
-    if not (file and allowed_file(file.filename)):
-        return 'Allowed image types are -> png, jpg, jpeg, gif', 400
-
-    filename = secure_filename(file.filename)
-    current_time = datetime.now()
-    new_filename = str(current_time) + "." + filename.split(".", 1)[1]
-
-    device_name = DEVICES[device_id]
-    filepath = os.path.join(app.config['UPLOAD_FOLDER'] + 'devices/' + device_name + "/photos/", new_filename)
-    file.save(filepath)
-    # img = Image.open(filepath)
-    # exif = {ExifTags.TAGS[k]: v for k, v in img._getexif().items() if k in ExifTags.TAGS}
-
-    return "Successful upload", 200
+async def measurements_dummy_db() -> List[Measurement]:
+	return [
+		Measurement(
+			id=1,
+			contract_id=1,
+			date="2019-05-11T12:34:05.743146Z",
+			type=MeasurementType.gas,
+			unit=MeasurementUnit.m3,
+			aggregate_consumption=300,
+			photo="app/static/uploads/20211102_143758.jpg"
+		)
+	]
 
 
-@app.route('/', methods=['POST'])
-def upload_image():
-    if 'file' not in request.files:
-        flash('No file part')
-        return redirect(request.url)
-    file = request.files['file']
-    if file.filename == '':
-        flash('No image selected for uploading')
-        return redirect(request.url)
-    if not (file and allowed_file(file.filename)):
-        flash('Allowed image types are -> png, jpg, jpeg, gif')
-        return redirect(request.url)
-    if 'measurement' not in request.form:
-        flash('No measurement provided')
-        return redirect(request.url)
-    try:
-        measurement = float(request.form['measurement'])
-    except ValueError:
-        flash('The provided measurement not a number')
-        return redirect(request.url)
-
-    if 'contract' not in request.form:
-        flash('No contract provided')
-        return redirect(request.url)
-
-    contract = request.form['contract']
-    if contract not in CONTRACTS:
-        flash('The selected contract is not in the allowed contracts')
-        return redirect(request.url)
-
-    logger.debug("Pulling any remote changes...")
-    my_cwd = os.path.dirname(os.getcwd())
-    repo = Repo(my_cwd)
-    origin = repo.remote(name='origin')
-    origin.pull()
-
-    contract_name = ''
-    measure_unit = ''
-    if contract == 'Electricity':
-        contract_name = 'StromKar39-23'
-        measure_unit = 'kWh'
-    if contract == 'Gas':
-        contract_name = 'GasKar39-23'
-        measure_unit = 'm3'
-
-    filename = secure_filename(file.filename)
-    filepath = os.path.join(os.getcwd(), app.config['UPLOAD_FOLDER'], filename)
-    logger.debug("Uploading image...")
-    file.save(filepath)
-
-    img = Image.open(filepath)
-    logger.debug("Image uploaded...")
-    logger.debug("Adding new measurement...")
-    exif = {ExifTags.TAGS[k]: v for k, v in img._getexif().items() if k in ExifTags.TAGS}
-
-    created_time = datetime.strptime(exif['DateTime'], '%Y:%m:%d %H:%M:%S')
-
-    measurements_df = pd.read_csv(MEASUREMENTS_PATH)
-
-    new_measurement_df = pd.DataFrame({
-        'aggregate_consumption': measurement,
-        "date": created_time,
-        "measure_unit": measure_unit,
-        'contract': contract_name,
-        'photo': filename
-    }, index=["1"])
-    measurements_df = pd.concat([measurements_df, new_measurement_df], ignore_index=True)
-
-    measurements_df.to_csv(MEASUREMENTS_PATH, index=False)
-    logger.debug("New measurement added...")
-
-    logger.debug("Committing the new measurement...")
-    repo.git.add(".")
-    repo.index.commit(f"New {contract} measurement for {contract_name} on {created_time}")
-    origin.push()
-    logger.debug("New measurement committed...")
-
-    flash('Measurement submitted successfully.')
-    # return render_template('upload.html', filename=filename)
-    return render_template('upload.html')
+app = FastAPI()
 
 
-@app.route('/display/<filename>')
-def display_image(filename):
-    return redirect(url_for('static', filename='uploads/' + filename), code=301)
+@app.get(
+	"/measurements",
+	response_model=List[Measurement]
+)
+async def get_measurements() -> List[Measurement]:
+	return await measurements_dummy_db()
 
 
-if __name__ == "__main__":
-    app.run(host="0.0.0.0", port=5003)
+@app.post(
+	"/measurements",
+	response_model=Measurement
+)
+async def create_measurement(
+		measurement: MeasurementCreate
+) -> Measurement:
+	return Measurement(
+		id=10,
+		**measurement.model_dump()
+	)
