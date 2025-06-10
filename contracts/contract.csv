@@ -7,5 +7,7 @@ StromKar39-21,StromKar39-21,Strom,Karlsgraben 39 EG,2021,2021-10-11,2022-10-10,V
 GasKar39-21,GasKar39-21,Gas,Karlsgraben 39 EG,2021,2021-10-11,2022-10-10,Vattenfall,EUR,kWh
 StromKar39-22,StromKar39-22,Strom,Karlsgraben 39 EG,2022,2022-10-11,2023-10-12,STAWAG,EUR,kWh
 GasKar39-22,GasKar39-22,Gas,Karlsgraben 39 EG,2022,2022-10-11,2023-10-10,STAWAG,EUR,kWh
-StromKar39-23,GasKar39-23,Strom,Karlsgraben 39 EG,2023,2023-10-13,2024-10-12,eprimo,EUR,kWh
+StromKar39-23,StromKar39-23,Strom,Karlsgraben 39 EG,2023,2023-10-13,2024-10-12,eprimo,EUR,kWh
 GasKar39-23,GasKar39-23,Gas,Karlsgraben 39 EG,2023,2023-10-06,2024-10-05,eprimo,EUR,kWh
+StromKar39-24,StromKar39-24,Strom,Karlsgraben 39 EG,2024,2024-10-13,2025-10-12,grunwelt,EUR,kWh
+GasKar39-24,GasKar39-24,Gas,Karlsgraben 39 EG,2024,2024-10-06,2025-10-05,grunwelt,EUR,kWh
